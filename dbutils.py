@@ -10,7 +10,7 @@ class DatabaseUtils:
 
     def __init__(self):
         self.cred = {"DATABASE_TYPE" : 'postgresql', "DBAPI": 'psycopg2', 'HOST': 'localhost', 
-                      'USER': 'postgres', "PASSWORD": 'sabs07', 'DATABASE': 'dotplot_data', 'PORT':5432}
+                      'USER': 'postgres', "PASSWORD": 'xxxxx', 'DATABASE': 'dotplot_data', 'PORT':5432}
         
 
     def connect_to_db(self, df, table_name):
