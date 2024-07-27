@@ -11,7 +11,7 @@ def get_db_connection(postgres=True, sqllite=False):
                 host="localhost",
                 database="dotplot_data",
                 user="postgres",
-                password="sabs07"
+                password="xxxx"
             )
             return conn
         if sqllite:
