@@ -53,7 +53,7 @@ def index():
         rows = []
     cursor.close()
     conn.close()
-    return render_template('index.html', rows=rows, first_name_query=first_name_query, last_name_query=last_name_query)
+    return render_template('index.html', rows=rows, first_name_query=first_name_query, last_name_query=last_name_query, scan_id=scan_id)
 
 if __name__ == '__main__':
     app.run(debug=True)
