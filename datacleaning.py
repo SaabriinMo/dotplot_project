@@ -49,9 +49,13 @@ class DataCleaning:
         self.seperate_patient_name(df)
         df = self.split_scan_id(df, "US scan ID")
         self.change_type(df, 'US scan ID', int)
-        self.change_type(df, 'First Name', str)
-        self.change_type(df, 'Last Name', str)
+        self.change_type(df, 'first_name', str)
+        self.change_type(df, 'last_name', str)
         df = self.rearrange_columns(df)
+        df.rename(columns={"Patient ID": "patient_id", "Age": "age", 
+                            "Height (cm)":"height_cm", "Weight (kg)": "weight_in_kg",
+                            "History of breast cancer": "history_of_breast_cancer",
+                            "US scan ID": "us_scan_id"}, inplace=True)
         return df
     
     def clean_us_scan_data(self, df):
@@ -71,6 +75,10 @@ class DataCleaning:
         self.clean_date(df, "Scan Date")
         self.change_type(df, 'US scan ID', int)
         df.drop(df[df['US scan ID'] == 467].index, inplace=True)
+        df.rename(columns={"US scan ID": "us_scan_id",
+                            "Coordinates": "coordinates",
+                            "Scan Date": "scan_date",
+                            "Diagnosis": "diagnosis"}, inplace=True)
         return df
 
     def seperate_patient_name(self, df):
@@ -83,7 +91,7 @@ class DataCleaning:
                 the dataframe containing the patients name  
         """
         split_patient_name = df['Patient Name'].str.split(" ").tolist()
-        df[['First Name', 'Last Name']] = pd.DataFrame(split_patient_name, index=df.index)
+        df[['first_name', 'last_name']] = pd.DataFrame(split_patient_name, index=df.index)
         df.drop(["Patient Name"], axis=1, inplace=True)
 
     def split_scan_id(self, df, column_name):

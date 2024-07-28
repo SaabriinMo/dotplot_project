@@ -10,7 +10,8 @@ class DatabaseUtils:
 
     def __init__(self):
         self.cred = {"DATABASE_TYPE" : 'postgresql', "DBAPI": 'psycopg2', 'HOST': 'localhost', 
-                      'USER': 'postgres', "PASSWORD": 'xxxxx', 'DATABASE': 'dotplot_data', 'PORT':5432}
+                      'USER': 'postgres', "PASSWORD": 'xxx', 'DATABASE': 'dotplot_data', 'PORT':5432}
+        
         
 
     def connect_to_db(self, df, table_name):
@@ -19,10 +20,14 @@ class DatabaseUtils:
 
         Parameters:
         -----------
+        df: DataFrame
+            the cleaned dataframe to upload to database
 
+        table_name: str
 
         Returns:
         --------
+            None
         """
         engine = create_engine(f"{self.cred['DATABASE_TYPE']}+{self.cred['DBAPI']}://{self.cred['USER']}:{self.cred['PASSWORD']}@{self.cred['HOST']}:{self.cred['PORT']}/{self.cred['DATABASE']}")
         engine.connect()
