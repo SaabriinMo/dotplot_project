@@ -14,7 +14,7 @@ def get_db_connection(postgres=True, sqllite=False):
                 password="xxxx"
             )
             return conn
-        if sqllite:
+        elif sqllite:
             DATABASE = 'dotplot_data.db'
             conn = getattr(g, '_database', None)
             if conn is not None:
@@ -30,20 +30,20 @@ def index():
     first_name_query = request.form.get('first_name')
     last_name_query = request.form.get('last_name')
     scan_id = request.form.get('scan_id')
-    conn = get_db_connection()
+    conn = get_db_connection(postgres=True)
     cur = conn.cursor()
     try:
         if request.method == 'GET':
-            cur.execute('SELECT * FROM patients_table JOIN us_scan_table ON patients_table.us_scan_id = us_scan_table.us_scan_id')
+            cur.execute('SELECT patients_table.*,us_scan_table.coordinates, us_scan_table.scan_date, us_scan_table.diagnosis FROM patients_table JOIN us_scan_table ON patients_table.us_scan_id = us_scan_table.us_scan_id')
         else:
             if first_name_query:
-                cur.execute('SELECT * FROM patients_table JOIN us_scan_table ON patients_table.us_scan_id = us_scan_table.us_scan_id WHERE "First Name" ILIKE %s', 
+                cur.execute('SELECT patients_table.*,us_scan_table.coordinates, us_scan_table.scan_date, us_scan_table.diagnosis FROM patients_table JOIN us_scan_table ON patients_table.us_scan_id = us_scan_table.us_scan_id WHERE first_name ILIKE %s', 
                             (f'%{first_name_query}%',))
             elif last_name_query:
-                cur.execute('SELECT * FROM patients_table JOIN us_scan_table ON patients_table.us_scan_id = us_scan_table.us_scan_id WHERE "Last Name" ILIKE %s', 
+                cur.execute('SELECT patients_table.*,us_scan_table.coordinates, us_scan_table.scan_date, us_scan_table.diagnosis FROM patients_table JOIN us_scan_table ON patients_table.us_scan_id = us_scan_table.us_scan_id WHERE last_name ILIKE %s', 
                             (f'%{last_name_query}%',))
             if scan_id:
-                cur.execute('SELECT * FROM patients_table JOIN us_scan_table ON patients_table.us_scan_id = us_scan_table.us_scan_id WHERE patients_table.us_scan_id = CAST(%s AS BIGINT)',
+                cur.execute('SELECT patients_table.*,us_scan_table.coordinates, us_scan_table.scan_date, us_scan_table.diagnosis  FROM patients_table JOIN us_scan_table ON patients_table.us_scan_id = us_scan_table.us_scan_id WHERE patients_table.us_scan_id = CAST(%s AS BIGINT)',
                             (f'{scan_id}',))
         
         rows = cur.fetchall()
@@ -51,7 +51,7 @@ def index():
     except Exception as e:
         print(f"Error executing query: {e}")
         rows = []
-    cursor.close()
+    cur.close()
     conn.close()
     return render_template('index.html', rows=rows, first_name_query=first_name_query, last_name_query=last_name_query, scan_id=scan_id)
 
