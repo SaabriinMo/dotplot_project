@@ -1,9 +1,10 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
+from flask_cors import CORS
 import psycopg2
 import sqlite3
 
 app = Flask(__name__)
-
+CORS(app)
 def get_db_connection(postgres=True, sqllite=False):
     try:
         if postgres:
@@ -11,7 +12,7 @@ def get_db_connection(postgres=True, sqllite=False):
                 host="localhost",
                 database="dotplot_data",
                 user="postgres",
-                password="xxxx"
+                password="xxx"
             )
             return conn
         elif sqllite:
@@ -29,7 +30,7 @@ def get_db_connection(postgres=True, sqllite=False):
 def index():
     first_name_query = request.form.get('first_name')
     last_name_query = request.form.get('last_name')
-    scan_id = request.form.get('scan_id')
+    scan_id = request.form.get('patient_id')
     conn = get_db_connection(postgres=True)
     cur = conn.cursor()
     try:
@@ -43,7 +44,7 @@ def index():
                 cur.execute('SELECT patients_table.*,us_scan_table.coordinates, us_scan_table.scan_date, us_scan_table.diagnosis FROM patients_table JOIN us_scan_table ON patients_table.us_scan_id = us_scan_table.us_scan_id WHERE last_name ILIKE %s', 
                             (f'%{last_name_query}%',))
             if scan_id:
-                cur.execute('SELECT patients_table.*,us_scan_table.coordinates, us_scan_table.scan_date, us_scan_table.diagnosis  FROM patients_table JOIN us_scan_table ON patients_table.us_scan_id = us_scan_table.us_scan_id WHERE patients_table.us_scan_id = CAST(%s AS BIGINT)',
+                cur.execute('SELECT patients_table.*,us_scan_table.coordinates, us_scan_table.scan_date, us_scan_table.diagnosis  FROM patients_table JOIN us_scan_table ON patients_table.us_scan_id = us_scan_table.us_scan_id WHERE patient_id = CAST(%s AS BIGINT)',
                             (f'{scan_id}',))
         
         rows = cur.fetchall()
@@ -53,7 +54,8 @@ def index():
         rows = []
     cur.close()
     conn.close()
-    return render_template('index.html', rows=rows, first_name_query=first_name_query, last_name_query=last_name_query, scan_id=scan_id)
+    
+    return jsonify(rows)
 
 if __name__ == '__main__':
     app.run(debug=True)
