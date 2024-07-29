@@ -6,6 +6,24 @@ import sqlite3
 app = Flask(__name__)
 CORS(app)
 def get_db_connection(postgres=True, sqllite=False):
+    """
+    this function creates a connection with the desired database to retrieve data  
+
+    Parameters:
+    -----------
+        postgres: Bool 
+            Set to True if PostgreSQL is the desired database (default is True).
+
+        sqllite: Bool
+            Set to True if SQLite is the desired database (default is False).
+
+    Returns:
+        conn: Connection or None
+            A connection object to the specified database, or None if the connection fails.
+
+    NOTE: REPLACE "XXXX" WITH YOUR password ty.
+    """
+
     try:
         if postgres:
             conn = psycopg2.connect(
